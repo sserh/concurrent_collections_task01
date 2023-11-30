@@ -23,62 +23,11 @@ public class Main {
             }
         }).start();
 
-        new Thread(() -> {
-            int count = 0;
-            String stringWithMaxCount = "";
-            for (int i = 0; i < 10_000; i++) {
-                String tmp;
-                try {
-                    tmp = arrayBlockingQueueForA.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                int tmpLength = getSymbolCount(tmp, "a");
-                if (tmpLength > count) {
-                    count = tmpLength;
-                    stringWithMaxCount = tmp;
-                }
-            }
-            printResult("a", count, stringWithMaxCount);
-        }).start();
+        new Thread(() -> doCount(arrayBlockingQueueForA, "a")).start();
 
-        new Thread(() -> {
-            int count = 0;
-            String stringWithMaxCount = "";
-            for (int i = 0; i < 10_000; i++) {
-                String tmp;
-                try {
-                    tmp = arrayBlockingQueueForB.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                int tmpLength = getSymbolCount(tmp, "b");
-                if (tmpLength > count) {
-                    count = tmpLength;
-                    stringWithMaxCount = tmp;
-                }
-            }
-            printResult("b", count, stringWithMaxCount);
-        }).start();
+        new Thread(() -> doCount(arrayBlockingQueueForB, "b")).start();
 
-        new Thread(() -> {
-            int count = 0;
-            String stringWithMaxCount = "";
-            for (int i = 0; i < 10_000; i++) {
-                String tmp;
-                try {
-                    tmp = arrayBlockingQueueForC.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                int tmpLength = getSymbolCount(tmp, "c");
-                if (tmpLength > count) {
-                    count = tmpLength;
-                    stringWithMaxCount = tmp;
-                }
-            }
-            printResult("c", count, stringWithMaxCount);
-        }).start();
+        new Thread(() -> doCount(arrayBlockingQueueForC, "c")).start();
 
     }
 
@@ -98,5 +47,24 @@ public class Main {
 
     public static void printResult(String symbol, int count, String resultString) {
         System.out.println("\nСтрока с максимальным количеством символов " + symbol + " (" + count + " вхождений): " + resultString);
+    }
+
+    public static void doCount(ArrayBlockingQueue<String> array, String symbol) {
+        int count = 0;
+        String stringWithMaxCount = "";
+        for (int i = 0; i < 10_000; i++) {
+            String tmp;
+            try {
+                tmp = array.take();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            int tmpLength = getSymbolCount(tmp, symbol);
+            if (tmpLength > count) {
+                count = tmpLength;
+                stringWithMaxCount = tmp;
+            }
+        }
+        printResult(symbol, count, stringWithMaxCount);
     }
 }
